@@ -1,71 +1,174 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gizlilik Politikası</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>TRT Canlı Yayın Oynatıcı</title>
+    <!-- HLS.js Kütüphanesi -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        :root {
+            --primary: #e50914;
+            --surface: #0f1419;
+            --surface-alt: #1a1f2e;
+            --text: #f7fafc;
+            --text-muted: #a0aec0;
+            --border: #2d3748;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background-color: #0a0e14;
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .player-wrapper {
+            flex: 2;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            aspect-ratio: 16/9;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .channel-list {
+            flex: 1;
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            min-width: 280px;
+        }
+
+        .channel-title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--text);
+        }
+
+        .channel-item {
+            background: var(--surface-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .channel-item:hover {
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .channel-item.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .badge {
+            font-size: 11px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 800px) {
+            .container { flex-direction: column; }
+            .player-wrapper, .channel-list { width: 100%; }
+        }
+    </style>
 </head>
 <body>
-  <h1>Gizlilik Politikası</h1>
 
-  <p><strong>Son güncelleme tarihi:</strong> 19 Mayıs 2025</p>
+    <div class="container">
+        <!-- HTML5 Video Oynatıcı -->
+        <div class="player-wrapper">
+            <video id="videoPlayer" controls autoplay playsinline></video>
+        </div>
 
-  <p>Bu gizlilik politikası, <strong>[FootyCrew]</strong> adlı mobil uygulamanın kullanıcılarından hangi bilgileri topladığını, bu bilgilerin nasıl kullanıldığını ve korunduğunu açıklamaktadır.</p>
+        <!-- Kanal Listesi -->
+        <div class="channel-list">
+            <div class="channel-title">TRT Canlı Kanallar</div>
+            
+            <div class="channel-item active" onclick="playStream('https://tv-trt1.medya.trt.com.tr/master.m3u8', this)">
+                <span>TRT 1 HD</span>
+                <span class="badge">HLS</span>
+            </div>
 
-  <h2>1. Toplanan Veriler</h2>
-  <p>Uygulamamız doğrudan herhangi bir <strong>kişisel veri</strong> (isim, e-posta, konum, kimlik, vs.) toplamaz.</p>
+            <div class="channel-item" onclick="playStream('https://tv-trtsporyildiz.medya.trt.com.tr/master.m3u8', this)">
+                <span>TRT Spor HD</span>
+                <span class="badge">HLS</span>
+            </div>
 
-  <h3>Dolaylı Toplanan Veriler (Üçüncü Taraflar aracılığıyla)</h3>
-  <p>Uygulama içinde reklam gösterimi amacıyla Google AdMob kullanılır. Bu hizmet sağlayıcılar kullanıcı cihazı hakkında aşağıdaki türden bilgileri dolaylı olarak toplayabilir:</p>
-  <ul>
-    <li>Cihaz türü ve modeli</li>
-    <li>Reklam Kimliği (Advertising ID)</li>
-    <li>IP adresi (anonimleştirilmiş)</li>
-    <li>Kullanım istatistikleri</li>
-  </ul>
-  <p>Bu veriler, sadece reklamların daha etkili ve uygun şekilde gösterilebilmesi amacıyla kullanılır.</p>
+            <div class="channel-item" onclick="playStream('https://tv-trthaber.medya.trt.com.tr/master.m3u8', this)">
+                <span>TRT Haber HD</span>
+                <span class="badge">HLS</span>
+            </div>
+        </div>
+    </div>
 
-  <h2>2. Reklamlar</h2>
-  <p>Uygulama açıldığında sadece bir kez geçişli reklam (interstitial ad) gösterilir ve bir sonraki uygulama açılana kadar tekrarlanmaz. Uygulama içi sabit (Banner) Reklamlar içerir. Bu reklamlar üçüncü taraf reklam ağı olan Google AdMob tarafından sağlanır.</p>
+    <script>
+        const video = document.getElementById('videoPlayer');
+        let hlsInstance = null;
 
-  <p>Google’ın reklam hizmetleri hakkında detaylı bilgiye buradan ulaşabilirsiniz:  
-  <a href="https://policies.google.com/technologies/ads" target="_blank">https://policies.google.com/technologies/ads</a></p>
+        function playStream(url, element) {
+            // Aktif buton görselini güncelle
+            if (element) {
+                document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+                element.classList.add('active');
+            }
 
-  <h2>3. Uygulama İçi Satın Alma</h2>
-  <p>Uygulama, Google Play üzerinden uygulama içi satın alma özelliği sunar. Kullanıcı, belirli bir ürün satın aldığında:</p>
-  <ul>
-    <li>Reklamlar kalıcı olarak devre dışı bırakılır</li>
-    <li>Uygulamanın bazı premium özelliklerine erişim sağlanır</li>
-  </ul>
-  <p>Satın alma işlemi tamamen Google Play altyapısı üzerinden gerçekleşir ve geliştirici olarak tarafımızca hiçbir kişisel bilgi toplanmaz veya saklanmaz.</p>
+            // HLS.js motoru kontrolü
+            if (Hls.isSupported()) {
+                if (hlsInstance) {
+                    hlsInstance.destroy(); // Önceki akışı temizle
+                }
+                hlsInstance = new Hls({
+                    enableWorker: true,
+                    lowLatencyMode: true
+                });
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(video);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function () {
+                    video.play().catch(() => {});
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Safari / iOS yerel desteği
+                video.src = url;
+                video.addEventListener('loadedmetadata', function () {
+                    video.play().catch(() => {});
+                });
+            }
+        }
 
-  <h2>4. İzinler</h2>
-  <p>Uygulama içerisinde telefon araması başlatma butonu bulunur. Bu özellik:</p>
-  <ul>
-    <li>Kullanıcının açıkça butona tıklaması ile çalışır</li>
-    <li>Otomatik olarak hiçbir çağrı başlatmaz</li>
-  </ul>
-  <p>Uygulama, cihazın arama özelliğine erişim izni isteyebilir, ancak bu sadece çağrı başlatma işlevi içindir.</p>
-
-   <p>Uygulama içerisinde mail gönderme butonu bulunur. Bu özellik:</p>
-  <ul>
-    <li>Kullanıcının açıkça gönder butonuna tıklaması ile çalışır</li>
-    <li>Otomatik olarak hiçbir gönderi başlatmaz</li>
-  </ul>
-  <p>Uygulama, cihazın mail özelliğine erişim izni isteyebilir, ancak bu sadece "Destek & Öneri" oluşturma işlevi içindir.</p>
-
-  <h2>5. Güvenlik</h2>
-  <p>Uygulama içinde kullanıcıya ait hiçbir kişisel bilgi toplanmadığı için, veri güvenliği riski bulunmamaktadır. Uygulama yalnızca reklam gösterimi ve satın alma işlemleri ile sınırlıdır.</p>
-
-  <h2>6. Üçüncü Taraf Bağlantılar</h2>
-  <p>Uygulama, harici bağlantılar içerebilir (örneğin destek e-posta adresi veya reklam içeriği). Bu bağlantılar, bağlı olunan üçüncü tarafların kendi gizlilik politikalarına tabidir.</p>
-
-  <h2>7. Değişiklikler</h2>
-  <p>Bu gizlilik politikası zaman zaman güncellenebilir. Değişiklikler bu sayfa üzerinde yayınlanacaktır. Bu sayfayı düzenli olarak kontrol etmeniz tavsiye edilir.</p>
-
-  <h2>8. İletişim</h2>
-  <p>Gizlilik politikası hakkında herhangi bir sorunuz varsa, bizimle aşağıdaki e-posta adresinden iletişime geçebilirsiniz:</p>
-  <p><strong>E-posta:</strong> swcrew@outlook.com.tr</p>
-
+        // Sayfa açıldığında varsayılan olarak TRT 1'i başlat
+        window.addEventListener('DOMContentLoaded', () => {
+            playStream('https://tv-trt1.medya.trt.com.tr/master.m3u8', null);
+        });
+    </script>
 </body>
 </html>
