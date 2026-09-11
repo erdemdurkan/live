@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>TRT Canlı Yayın Oynatıcı</title>
+    <title>Canlı Yayın Oynatıcı</title>
     <!-- HLS.js Kütüphanesi -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
@@ -112,8 +112,13 @@
 
         <!-- Kanal Listesi -->
         <div class="channel-list">
-            <div class="channel-title">TRT Canlı Kanallar</div>
-            
+            <div class="channel-title">Canlı Kanallar</div>
+
+            <div class="channel-item" onclick="playStream('https://andro.evrenesoglu99.click/checklist/batutest.m3u8', this)">
+                <span>BeIN Sports 1</span>
+                <span class="badge">NON</span>
+            </div>
+			
             <div class="channel-item" onclick="playStream('https://tv-trt1.medya.trt.com.tr/master.m3u8', this)">
                 <span>TRT 1 HD</span>
                 <span class="badge">YEREL</span>
@@ -133,12 +138,17 @@
                 <span>ATV HD</span>
                 <span class="badge">NON</span>
             </div>
-
-            <div class="channel-item" onclick="playStream('https://andro.evrenesoglu99.click/checklist/batutest.m3u8', this)">
-                <span>BeIN Sports 1</span>
-                <span class="badge">NON</span>
+			
+			<div class="channel-item" onclick="playStream('https://ciner.daioncdn.net/showtv/showtv_1080p.m3u8?ex=1664766175&st=RBzhSuGauna0OGld-DJUVA&tv=1&sid=8qrebbzmuwjg&app=4bc856ef-4c68-4a94-bc87-37dfaaa66558&ce=3', this)">
+                <span>SHOW TV HD</span>
+                <span class="badge">YEREL</span>
             </div>
-
+			
+			<div class="channel-item" onclick="playStream('https://dogus.daioncdn.net/startv/startv_720p.m3u8?&sid=8qrejapga6l0&app=a20ac41e-bdc3-4aa1-934d-26b484480ac9&ce=3', this)">
+                <span>STAR TV HD</span>
+                <span class="badge">YEREL</span>
+            </div>
+						
             <div class="channel-item" onclick="playStream('https://tv-trthaber.medya.trt.com.tr/master.m3u8', this)">
                 <span>TRT Haber HD</span>
                 <span class="badge">YEREL</span>
